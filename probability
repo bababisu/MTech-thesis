@@ -1,0 +1,86 @@
+import java.io.*;
+import java.lang.*;
+
+public class probability
+{
+    public static void main(String args[]) throws Exception
+    {
+        if(args.length != 4) //no parameters passed. Just print the usage and exit program
+        {
+            System.out.println("Usage: java probability <inputFileName> <outputFileName> <rateUpprob> <discountUpprob>");
+            return;
+        }
+
+        String inputFile = args[0];
+        String outputFile = args[1];
+        double rateUpprob = Double.parseDouble(args[2]);
+        double discountUpprob = Double.parseDouble(args[3]);
+        
+        //create the outputFile to write to
+        PrintWriter writer = new PrintWriter(outputFile);
+
+        // Open the inputFile
+        FileInputStream fstream = new FileInputStream(inputFile);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+        //variable to hold a line from inFile as we read through it
+        String strLine;
+
+        //Read inFile one line at a time
+        while ((strLine = br.readLine()) != null)
+        {
+            //process the line and output a number to output file
+            double result = calculate(strLine, rateUpprob, discountUpprob);
+            writer.println(result);
+        }
+
+        //Close the input stream
+        br.close();
+        //close the output writer
+        writer.close();
+
+        System.out.println("Done! Output file is " + outputFile);
+    }
+
+    public static double calculate(String line, double rateUpprob, double discountUpprob)
+    {
+        
+        double result = 1;
+
+        String[] strSegments = line.split(",");
+
+        //loop through all segments on this line
+        for(int i = 0; i < strSegments.length; i++)
+        {
+            if(strSegments[i].equals("RU"))
+            {
+
+		result = result * rateUpprob;
+		               
+            }
+            else if(strSegments[i].equals("RD"))
+            {
+		
+		result = result * ( 1 - rateUpprob );
+		                
+            }
+            else if(strSegments[i].equals("DU"))
+            {
+
+		result = result * discountUpprob;
+               
+            }
+            else if(strSegments[i].equals("DD"))
+            {
+		
+		result = result * ( 1 - discountUpprob );
+				
+            }
+	
+	}
+
+        //looping through all segments in this line is done. Return the result
+        return result;
+    }
+
+}
