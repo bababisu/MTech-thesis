@@ -1,0 +1,95 @@
+import java.io.*;
+import java.lang.*;
+
+public class GenerateAllPaths {
+
+    public static void main(String args[]) throws Exception
+    {
+        if(args.length != 2) //no parameters passed. Just print the usage and exit program
+        {
+            System.out.println("Usage: java GenerateAllPaths <outputFileName> <noOfLevels>");
+            return;
+        }
+
+        //output file name where all possible paths will be written
+        String outputFileName = args[0];
+
+        //number of levels to iterate
+        int noOfLevels = Integer.parseInt(args[1]);
+
+        //temporary variables to be used during the course of the program
+        String tempInputFileName = null;
+        String tempOutputFileName = null;
+
+        for(int level = 1; level <= noOfLevels; level++)
+        {
+            tempOutputFileName = "level" + level + ".txt"; //proposed temporary output filename
+            generatePaths(tempInputFileName, tempOutputFileName);
+
+            //let tempInputFileName be equal to tempOutputFileName to get ready for next round of iteration
+            tempInputFileName = tempOutputFileName;
+        }
+
+        //rename the tempOutputFileName to outputFileName as that is what the user is expecting
+        File oldfile = new File(tempOutputFileName);
+        File newfile = new File(outputFileName);
+
+        //if the outputFile exists from a previous run, just delete it
+        if(newfile.exists())
+        {
+            newfile.delete();
+        }
+
+        if(oldfile.renameTo(newfile))
+        {
+            System.out.println("Done! Output File is " + outputFileName);
+        }
+        else
+        {
+            System.out.println("Error! the file can't be renamed");
+        }
+    }
+
+    //function that reads each line from inFile and then appends 4 possible outcomes to generate 4 strings for each input string
+    public static void generatePaths(String inFile, String outFile) throws Exception
+    {
+        String[] possibleCombinationsArray = {"RU,DU", "RU,DD", "RD,DU", "RD,DD"};
+
+        //create the outFile to write to
+        PrintWriter writer = new PrintWriter(outFile);
+
+        //if inFile == null, then assume that it is the first run and we can just output all combinations to outFile
+        if(inFile == null)
+        {
+            writer.println(possibleCombinationsArray[0]);
+            writer.println(possibleCombinationsArray[1]);
+            writer.println(possibleCombinationsArray[2]);
+            writer.println(possibleCombinationsArray[3]);
+            writer.close();
+            return; // all done for case where inFile == null
+        }
+
+        // Open the inFile
+        FileInputStream fstream = new FileInputStream(inFile);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+        //variable to hold a line from inFile as we read through it
+        String strLine;
+
+        //Read inFile one line at a time
+        while ((strLine = br.readLine()) != null)
+        {
+            //Process the current line from inFile.
+            //Note: For this single line read from inFile, we are going to output 4 lines to outFile
+            writer.println(strLine + "," + possibleCombinationsArray[0]);
+            writer.println(strLine + "," + possibleCombinationsArray[1]);
+            writer.println(strLine + "," + possibleCombinationsArray[2]);
+            writer.println(strLine + "," + possibleCombinationsArray[3]);
+        }
+
+        //Close the input stream
+        br.close();
+        //close the output writer
+        writer.close();
+    }
+}
